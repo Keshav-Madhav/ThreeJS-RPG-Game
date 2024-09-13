@@ -14,11 +14,13 @@ document.body.appendChild( renderer.domElement );
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 const controls = new OrbitControls( camera, renderer.domElement );
+camera.position.set(20, 3, 20);
 
 const terrain = new Terrain(10, 10);
 scene.add(terrain);
 
 const sun = new THREE.DirectionalLight();
+sun.intensity = 3;
 sun.position.set( 1, 2, 3 );
 scene.add( sun );
 
@@ -45,9 +47,14 @@ window.addEventListener( 'resize', () => {
 })
 
 const terrainFolder = gui.addFolder('Terrain');
-terrainFolder.addColor(terrain.material, 'color').name('Color');
+terrainFolder.addColor(terrain.terrainMesh.material, 'color').name('Color');
 terrainFolder.add(terrain, 'width', 1, 100).name('Width');
 terrainFolder.add(terrain, 'height', 1, 100).name('Height');
+	const treeFolder = terrainFolder.addFolder('Tree');
+	treeFolder.add(terrain, 'treeCount', 0, 100).name('Tree Count');
+	treeFolder.onChange(() => {
+		terrain.createTrees();
+	})
 terrainFolder.onChange(() => {
-	terrain.createGeometry();
+	terrain.createTerrain();
 })
