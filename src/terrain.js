@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 
-export class Terrain extends THREE.Mesh {
+export class World extends THREE.Mesh {
+  #objectMap = new Map();
+
   constructor(width, height){
     super();
 
@@ -16,6 +18,8 @@ export class Terrain extends THREE.Mesh {
     this.createBushes();
     this.createRocks();
     this.createBoulders();
+
+    console.log(this.#objectMap);
   }
 
   createTerrain(){
@@ -41,13 +45,8 @@ export class Terrain extends THREE.Mesh {
   }
 
   createTrees(){
-    if(this.trees){
-      this.remove(this.trees);
-    }
-
     const treeHeight = 1;
     const treeRadius = 0.2;
-    
     const treeGoemetry = new THREE.ConeGeometry(treeRadius, treeHeight, 8);
     const treeMaterial = new THREE.MeshStandardMaterial({ 
       color: 0x408015,
@@ -59,14 +58,22 @@ export class Terrain extends THREE.Mesh {
 
     for(let i = 0; i< this.treeCount; i++){
       const treeMesh = new THREE.Mesh(treeGoemetry, treeMaterial);
+      const coords = new THREE.Vector2(
+        Math.floor(Math.random() * this.width),
+        Math.floor(Math.random() * this.height)
+      );
+
+      // Check if there is already an object at the current position
+      if(this.#objectMap.has(`${coords.x},${coords.y}`)) continue;
 
       treeMesh.position.set(
-        Math.floor(Math.random() * this.width) + 0.5,
+        coords.x + 0.5,
         treeHeight / 2 - Math.random() * 0.2,
-        Math.floor(Math.random() * this.height) + 0.5,
+        coords.y + 0.5
       );
 
       this.trees.add(treeMesh);
+      this.#objectMap.set(`${coords.x},${coords.y}`, treeMesh);
     }
   }
 
@@ -76,25 +83,32 @@ export class Terrain extends THREE.Mesh {
     const minRockHeight = 0.5;
     const maxRockHeight = 0.8;
     const rockMaterial = new THREE.MeshStandardMaterial({ color: 0xb0b0b0, flatShading: true });
-    
+
     this.rocks = new THREE.Group();
     this.add(this.rocks);
-    
+
     for(let i = 0; i< this.rockCount; i++){
       const radius = minRockRadius +( Math.random() * (maxRockRadius - minRockRadius));
       const height = minRockHeight + (Math.random() * (maxRockHeight - minRockHeight));
       const rockGeometry = new THREE.SphereGeometry(radius, 6, 5);
       const rockMesh = new THREE.Mesh(rockGeometry, rockMaterial);
+      const coords = new THREE.Vector2(
+        Math.floor(Math.random() * this.width),
+        Math.floor(Math.random() * this.height)
+      );
+
+      // Check if there is already an object at the current position
+      if(this.#objectMap.has(`${coords.x},${coords.y}`)) continue;
 
       rockMesh.position.set(
-        Math.floor(Math.random() * this.width) + 0.5,
+        coords.x  + 0.5,
         0,
-        Math.floor(Math.random() * this.height) + 0.
+        coords.y  + 0.5
       )
 
       rockMesh.scale.y = height;
-
       this.rocks.add(rockMesh)
+      this.#objectMap.set(`${coords.x},${coords.y}`, rockMesh);
     }
   }
 
@@ -113,19 +127,27 @@ export class Terrain extends THREE.Mesh {
       const height = minBouldHeight + (Math.random() * (maxBoulderHeight - minBouldHeight));
       const boulderGeometry = new THREE.IcosahedronGeometry(radius, 0);
       const boulderMesh = new THREE.Mesh(boulderGeometry, boulderMaterial);
+      const coords = new THREE.Vector2(
+        Math.floor(Math.random() * this.width),
+        Math.floor(Math.random() * this.height)
+      );
+
+      // Check if there is already an object at the current position
+      if(this.#objectMap.has(`${coords.x},${coords.y}`)) continue;
 
       boulderMesh.position.set(
-        Math.floor(Math.random() * this.width) + 0.5,
+        coords.x + 0.5,
         0,
-        Math.floor(Math.random() * this.height) + 0.5
+        coords.y + 0.5
       )
 
       boulderMesh.scale.y = height;
-
       this.boulders.add(boulderMesh);
+      this.#objectMap.set(`${coords.x},${coords.y}`, boulderMesh);
     }
   }
 
+  
   createBushes(){
     const minBushRadius = 0.1;
     const maxBushRadius = 0.2;
@@ -138,14 +160,22 @@ export class Terrain extends THREE.Mesh {
       const radius = minBushRadius + (Math.random() * (maxBushRadius - minBushRadius));
       const bushGeometry = new THREE.SphereGeometry(radius, 6, 5);
       const bushMesh = new THREE.Mesh(bushGeometry, bushMaterial);
+      const coords = new THREE.Vector2(
+        Math.floor(Math.random() * this.width),
+        Math.floor(Math.random() * this.height) 
+      );
+
+      // Check if there is already an object at the current position
+      if(this.#objectMap.has(`${coords.x},${coords.y}`)) continue;
 
       bushMesh.position.set(
-        Math.floor(Math.random() * this.width) + 0.5,
+        coords.x + 0.5,
         radius/2,
-        Math.floor(Math.random() * this.height) + 0.5
+        coords.y + 0.5
       )
 
       this.bushes.add(bushMesh);
+      this.#objectMap.set(`${coords.x},${coords.y}`, bushMesh);
     }
   }
 }
