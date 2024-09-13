@@ -13,22 +13,68 @@ export class World extends THREE.Mesh {
     this.rockCount = 10;
     this.boulderCount = 3;
 
+    this.trees = new THREE.Group();
+    this.bushes = new THREE.Group();
+    this.rocks = new THREE.Group();
+    this.boulders = new THREE.Group();
+    this.add(this.trees, this.bushes, this.rocks, this.boulders);
+
+    this.generate();
+  }
+
+  generate(){
+    this.clear();
+
     this.createTerrain();
     this.createTrees();
     this.createBushes();
     this.createRocks();
     this.createBoulders();
-
-    console.log(this.#objectMap);
   }
 
-  createTerrain(){
+  clear(){
     if(this.terrainMesh){
       this.terrainMesh.geometry.dispose();
       this.terrainMesh.material.dispose();
       this.remove(this.terrainMesh);
     }
 
+    if(this.trees){
+      this.trees.children.forEach(tree => {
+        tree.geometry?.dispose();
+        tree.material?.dispose();
+      });
+      this.trees.clear();
+    }
+
+    if(this.bushes){
+      this.bushes.children.forEach(bush => {
+        bush.geometry?.dispose();
+        bush.material?.dispose();
+      });
+      this.bushes.clear();
+    }
+
+    if(this.rocks){
+      this.rocks.children.forEach(rock => {
+        rock.geometry?.dispose();
+        rock.material?.dispose();
+      });
+      this.rocks.clear();
+    }
+
+    if(this.boulders){
+      this.boulders.children.forEach(boulder => {
+        boulder.geometry?.dispose();
+        boulder.material?.dispose();
+      });
+      this.boulders.clear();
+    }
+
+    this.#objectMap.clear();
+  }
+
+  createTerrain(){
     const terrainMaterial = new THREE.MeshStandardMaterial({ color: 0x50a000 });
     const terrainGeometry = new THREE.PlaneGeometry(
       this.width, 
@@ -52,9 +98,6 @@ export class World extends THREE.Mesh {
       color: 0x408015,
       flatShading: true,
     });
-
-    this.trees = new THREE.Group();
-    this.add(this.trees);
 
     for(let i = 0; i< this.treeCount; i++){
       const treeMesh = new THREE.Mesh(treeGoemetry, treeMaterial);
@@ -83,9 +126,6 @@ export class World extends THREE.Mesh {
     const minRockHeight = 0.5;
     const maxRockHeight = 0.8;
     const rockMaterial = new THREE.MeshStandardMaterial({ color: 0xb0b0b0, flatShading: true });
-
-    this.rocks = new THREE.Group();
-    this.add(this.rocks);
 
     for(let i = 0; i< this.rockCount; i++){
       const radius = minRockRadius +( Math.random() * (maxRockRadius - minRockRadius));
@@ -118,9 +158,6 @@ export class World extends THREE.Mesh {
     const minBouldHeight = 0.5;
     const maxBoulderHeight = 0.8;
     const boulderMaterial = new THREE.MeshStandardMaterial({ color: 0x606060, flatShading: true }); 
-
-    this.boulders = new THREE.Group();
-    this.add(this.boulders);
     
     for(let i = 0; i< this.boulderCount; i++){
       const radius = minBoulderRadius + (Math.random() * (maxBoulderRadius - minBoulderRadius));
@@ -152,9 +189,6 @@ export class World extends THREE.Mesh {
     const minBushRadius = 0.1;
     const maxBushRadius = 0.2;
     const bushMaterial = new THREE.MeshStandardMaterial({ color: 0x204010, flatShading: true });
-
-    this.bushes = new THREE.Group();
-    this.add(this.bushes);
 
     for(let i = 0; i< this.bushCount; i++){
       const radius = minBushRadius + (Math.random() * (maxBushRadius - minBushRadius));

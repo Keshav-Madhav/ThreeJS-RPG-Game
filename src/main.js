@@ -47,9 +47,10 @@ window.addEventListener( 'resize', () => {
 })
 
 const worldFolder = gui.addFolder('World');
-worldFolder.addColor(world.terrainMesh.material, 'color').name('Color');
 worldFolder.add(world, 'width', 1, 100).name('Width');
 worldFolder.add(world, 'height', 1, 100).name('Height');
-worldFolder.onChange(() => {
-	world.createTerrain();
-})
+worldFolder.add(world, 'treeCount', 0, 60, 1).name('Tree Count');
+worldFolder.add(world, 'bushCount', 0, 30, 1).name('Bush Count');
+worldFolder.add(world, 'rockCount', 0, 30, 1).name('Rock Count');
+worldFolder.add(world, 'boulderCount',0, 10, 1).name('Boulder Count');
+worldFolder.add(world, 'generate').name('Generate');
