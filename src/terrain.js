@@ -5,7 +5,6 @@ const gridTexture = textureLoader.load('grid.png');
 
 export class World extends THREE.Group {
   #objectMap = new Map();
-
   constructor(width, height){
     super();
 
@@ -20,7 +19,9 @@ export class World extends THREE.Group {
     this.bushes = new THREE.Group();
     this.rocks = new THREE.Group();
     this.boulders = new THREE.Group();
-    this.add(this.trees, this.bushes, this.rocks, this.boulders);
+    this.path = new THREE.Group();
+  
+    this.add(this.trees, this.bushes, this.rocks, this.boulders, this.path);
 
     this.generate();
   }

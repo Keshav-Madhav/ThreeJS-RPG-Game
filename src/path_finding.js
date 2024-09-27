@@ -5,8 +5,10 @@ export function search(start, end, world){
   if(start.x === end.x && start.y === end.y) return []
 
   const maxDistance = 20;
+  const cameFrom = new Map();
   const visited = new Set();
   const frontier = [start];
+  let found = false;
 
   while(frontier.length > 0){
     frontier.sort((v1, v2) => {
@@ -17,10 +19,8 @@ export function search(start, end, world){
     })
 
     const candidate = frontier.shift();
-    console.log(candidate)
-
     if(candidate.x === end.x && candidate.y === end.y){
-      console.log('Found the end');
+      found = true;
       break;
     }
     if(candidate.manhattanDistanceTo(start) > maxDistance){
@@ -31,7 +31,27 @@ export function search(start, end, world){
 
     const neighbors = getNeighbors(candidate, world, visited);
     frontier.push(...neighbors);
+
+    neighbors.forEach(neighbor => {
+      cameFrom.set(`${neighbor.x},${neighbor.y}`, candidate);
+    });
   }
+
+  if (!found) return null;
+
+  let curr = end;
+  const path = [curr]
+
+  while (`${curr.x},${curr.y}` !== `${start.x},${start.y}`){
+    const prev = cameFrom.get(`${curr.x},${curr.y}`);
+    path.push(prev);
+    curr = prev;
+  }
+
+  path.reverse();
+  path.shift();
+
+  return path;
 }
 
 function getNeighbors(coords, world, visited){
@@ -53,7 +73,7 @@ function getNeighbors(coords, world, visited){
   }
 
   neighbors = neighbors.filter(neighbor => {
-    return !visited.has(`${neighbor.x},${neighbor.y}`);
+    return !visited.has(`${neighbor.x},${neighbor.y}`) && !world.getObject(neighbor);
   });
 
   return neighbors;
