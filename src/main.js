@@ -54,8 +54,8 @@ window.addEventListener( 'resize', () => {
 })
 
 const worldFolder = gui.addFolder('World');
-worldFolder.add(world, 'width', 1, 100).name('Width');
-worldFolder.add(world, 'height', 1, 100).name('Height');
+worldFolder.add(world, 'width', 1, 100, 1).name('Width');
+worldFolder.add(world, 'height', 1, 100, 1).name('Height');
 worldFolder.add(world, 'treeCount', 0, 60, 1).name('Tree Count');
 worldFolder.add(world, 'bushCount', 0, 30, 1).name('Bush Count');
 worldFolder.add(world, 'rockCount', 0, 30, 1).name('Rock Count');

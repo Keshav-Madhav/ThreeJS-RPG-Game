@@ -6,30 +6,36 @@ export function search(start, end, world){
 
   const maxDistance = 20;
   const cameFrom = new Map();
-  const visited = new Set();
+  const cost = new Map();
+  cost.set(`${start.x},${start.y}`, 0);
   const frontier = [start];
   let found = false;
 
   while(frontier.length > 0){
     frontier.sort((v1, v2) => {
-      const d1 = start.manhattanDistanceTo(v1);
-      const d2 = start.manhattanDistanceTo(v2);
+      const g1 = start.manhattanDistanceTo(v1);
+      const g2 = start.manhattanDistanceTo(v2);
+
+      const h1 = v1.manhattanDistanceTo(end);
+      const h2 = v2.manhattanDistanceTo(end);
+
+      const d1 = g1 + h1;
+      const d2 = g2 + h2;
 
       return d1 - d2;
     })
 
     const candidate = frontier.shift();
+
     if(candidate.x === end.x && candidate.y === end.y){
       found = true;
       break;
     }
-    if(candidate.manhattanDistanceTo(start) > maxDistance){
-      continue;
-    }
+    // if(candidate.manhattanDistanceTo(start) > maxDistance){
+    //   continue;
+    // }
 
-    visited.add(`${candidate.x},${candidate.y}`);
-
-    const neighbors = getNeighbors(candidate, world, visited);
+    const neighbors = getNeighbors(candidate, world, cost);
     frontier.push(...neighbors);
 
     neighbors.forEach(neighbor => {
@@ -54,7 +60,7 @@ export function search(start, end, world){
   return path;
 }
 
-function getNeighbors(coords, world, visited){
+function getNeighbors(coords, world, cost){
   let neighbors = [];
   if(coords.x > 0){
     neighbors.push(new THREE.Vector2(coords.x - 1, coords.y));
@@ -72,8 +78,16 @@ function getNeighbors(coords, world, visited){
     neighbors.push(new THREE.Vector2(coords.x, coords.y + 1));
   }
 
+  const newCost = cost.get(`${coords.x},${coords.y}`) + 1;
+
   neighbors = neighbors.filter(neighbor => {
-    return !visited.has(`${neighbor.x},${neighbor.y}`) && !world.getObject(neighbor);
+    let isCheaper = false
+    if(!cost.has(`${neighbor.x},${neighbor.y}`) || newCost < cost.get(`${neighbor.x},${neighbor.y}`)){
+      cost.set(`${neighbor.x},${neighbor.y}`, newCost);
+      isCheaper = true;
+    }
+
+    return isCheaper && !world.getObject(neighbor);
   });
 
   return neighbors;
