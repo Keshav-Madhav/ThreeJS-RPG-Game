@@ -16,7 +16,7 @@ export class Rock extends GameObject{
   constructor(coords){
     super(coords, rockGeometry, rockMaterial);
 
-    this.name = `Rock (${coords.x},${coords.y})`;
+    this.name = `Rock (${coords.x},${coords.z})`;
     
     const radius = this.minRockRadius +( Math.random() * (this.maxRockRadius - this.minRockRadius));
     const height = this.minRockHeight + (Math.random() * (this.maxRockHeight - this.minRockHeight));

@@ -14,7 +14,7 @@ export class Bush extends GameObject{
   constructor(coords){
     super(coords, bushGeometry, bushMaterial);
     
-    this.name = `Bush (${coords.x},${coords.y})`;
+    this.name = `Bush (${coords.x},${coords.z})`;
     const radius = this.minBushRadius + (Math.random() * (this.maxBushRadius - this.minBushRadius));
 
     this.scale.set(radius, radius, radius);

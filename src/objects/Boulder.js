@@ -16,7 +16,7 @@ export class Boulder extends GameObject{
   constructor(coords){
     super(coords, boulderGeometry, boulderMaterial);
 
-    this.name = `Boulder (${coords.x},${coords.y})`;
+    this.name = `Boulder (${coords.x},${coords.z})`;
     const radius = this.minBoulderRadius + (Math.random() * (this.maxBoulderRadius - this.minBoulderRadius));
     const height = this.minBouldHeight + (Math.random() * (this.maxBoulderHeight - this.minBouldHeight));
 

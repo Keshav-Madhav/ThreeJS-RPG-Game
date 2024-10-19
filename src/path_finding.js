@@ -1,13 +1,14 @@
 import * as THREE from 'three';
+import { getKey } from '../utils';
 
 export function search(start, end, world){
   // const o = world.getObject(start);
-  if(start.x === end.x && start.y === end.y) return []
+  if(start.equals(end)) return []
 
   const maxDistance = 20;
   const cameFrom = new Map();
   const cost = new Map();
-  cost.set(`${start.x},${start.y}`, 0);
+  cost.set(getKey(start), 0);
   const frontier = [start];
   let found = false;
 
@@ -27,7 +28,7 @@ export function search(start, end, world){
 
     const candidate = frontier.shift();
 
-    if(candidate.x === end.x && candidate.y === end.y){
+    if(candidate.equals(end)){
       found = true;
       break;
     }
@@ -39,7 +40,7 @@ export function search(start, end, world){
     frontier.push(...neighbors);
 
     neighbors.forEach(neighbor => {
-      cameFrom.set(`${neighbor.x},${neighbor.y}`, candidate);
+      cameFrom.set(getKey(neighbor), candidate);
     });
   }
 
@@ -48,8 +49,8 @@ export function search(start, end, world){
   let curr = end;
   const path = [curr]
 
-  while (`${curr.x},${curr.y}` !== `${start.x},${start.y}`){
-    const prev = cameFrom.get(`${curr.x},${curr.y}`);
+  while (getKey(curr) !== getKey(start)){
+    const prev = cameFrom.get(getKey(curr));
     path.push(prev);
     curr = prev;
   }
@@ -63,27 +64,27 @@ export function search(start, end, world){
 function getNeighbors(coords, world, cost){
   let neighbors = [];
   if(coords.x > 0){
-    neighbors.push(new THREE.Vector2(coords.x - 1, coords.y));
+    neighbors.push(new THREE.Vector3(coords.x - 1, 0, coords.z));
   }
 
   if(coords.x < world.width - 1){
-    neighbors.push(new THREE.Vector2(coords.x + 1, coords.y));
+    neighbors.push(new THREE.Vector3(coords.x + 1, 0, coords.z));
   }
 
-  if(coords.y > 0){
-    neighbors.push(new THREE.Vector2(coords.x, coords.y - 1));
+  if(coords.z > 0){
+    neighbors.push(new THREE.Vector3(coords.x, 0, coords.z - 1));
   }
 
-  if(coords.y < world.height - 1){
-    neighbors.push(new THREE.Vector2(coords.x, coords.y + 1));
+  if(coords.z < world.height - 1){
+    neighbors.push(new THREE.Vector3(coords.x, 0, coords.z + 1));
   }
 
-  const newCost = cost.get(`${coords.x},${coords.y}`) + 1;
+  const newCost = cost.get(getKey(coords)) + 1;
 
   neighbors = neighbors.filter(neighbor => {
     let isCheaper = false
-    if(!cost.has(`${neighbor.x},${neighbor.y}`) || newCost < cost.get(`${neighbor.x},${neighbor.y}`)){
-      cost.set(`${neighbor.x},${neighbor.y}`, newCost);
+    if(!cost.has(getKey(neighbor)) || newCost < cost.get(getKey(neighbor))){
+      cost.set(getKey(neighbor), newCost);
       isCheaper = true;
     }
 

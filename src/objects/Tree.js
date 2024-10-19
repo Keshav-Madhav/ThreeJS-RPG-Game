@@ -14,7 +14,7 @@ export class Tree extends GameObject{
   constructor(coords){
     super(coords, treeGoemetry, treeMaterial);
     
-    this.name = `Tree (${coords.x},${coords.y})`;
+    this.name = `Tree (${coords.x},${coords.z})`;
 
     this.position.set(
       coords.x + 0.5,

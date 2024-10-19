@@ -4,6 +4,10 @@ import { search } from './path_finding';
 export class Player extends THREE.Mesh {
   raycaster = new THREE.Raycaster();
 
+  path = []
+  pathIndex = 0;
+  pathUpdater = null;
+
   constructor(camera, world){
     super();
 
@@ -30,14 +34,20 @@ export class Player extends THREE.Mesh {
       const z = Math.floor(point.z);
 
       const playerx = Math.floor(this.position.x);
+      const playery = Math.floor(this.position.y);
       const playerz = Math.floor(this.position.z);
 
-      const path = search(new THREE.Vector2(playerx, playerz), new THREE.Vector2(x, z), this.world);
+      clearInterval(this.pathUpdater);
+
+      this.path = search(new THREE.Vector3(playerx, playery, playerz), new THREE.Vector3(x, 0, z), this.world);
 
       this.world.path.clear();
 
-      if(path){
-        this.drawPathLine(path);
+      if(this.path){
+        this.drawPathLine(this.path);
+
+        this.pathIndex = 0;
+        this.pathUpdater = setInterval(this.updatePosition.bind(this), 200);
       }
     }
   }
@@ -46,13 +56,24 @@ export class Player extends THREE.Mesh {
     // Clear existing path
     this.world.path.clear();
 
-    path.unshift(new THREE.Vector2(Math.floor(this.position.x), Math.floor(this.position.z)));
+    path.unshift(new THREE.Vector3(Math.floor(this.position.x), 0, Math.floor(this.position.z)));
 
-    const points = path.map(coord => new THREE.Vector3(coord.x + 0.5, 0.1, coord.y + 0.5));
+    const points = path.map(coord => new THREE.Vector3(coord.x + 0.5, 0.1, coord.z + 0.5));
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const material = new THREE.LineBasicMaterial({ color: 0x40c040, linewidth: 2 });
     const line = new THREE.Line(geometry, material);
 
     this.world.path.add(line);
+  }
+
+  updatePosition(){
+    if(this.pathIndex === this.path.length){
+      clearInterval(this.pathUpdater);
+      return;
+    }
+
+    const curr = this.path[this.pathIndex];
+    this.position.set(curr.x + 0.5, 0.3, curr.z + 0.5);
+    this.pathIndex++;
   }
 }
