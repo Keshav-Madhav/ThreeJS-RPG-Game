@@ -13,13 +13,28 @@ export class MovementAction extends Action {
     this.world = world;
   }
 
-  async perform() {      
-    clearInterval(this.pathUpdater);
-
-    this.drawPathLine(this.path);
-
-    this.pathIndex = 0;
-    this.pathUpdater = setInterval(this.updatePosition.bind(this), 200);
+  async perform() {   
+    return new Promise((resolve) => {
+      function updatePosition(){
+        if(this.pathIndex === this.path.length){
+          clearInterval(this.pathUpdater);
+          // Clear existing path
+          this.world.path.clear();
+          resolve();
+        } else {
+          const curr = this.path[this.pathIndex];
+          this.source.moveTo(curr);
+          this.pathIndex++;
+        }
+      }
+      
+      clearInterval(this.pathUpdater);
+      
+      this.drawPathLine(this.path);
+      
+      this.pathIndex = 0;
+      this.pathUpdater = setInterval(updatePosition.bind(this), 200);
+    });
   }
 
   async canPerform() {
@@ -39,18 +54,5 @@ export class MovementAction extends Action {
     const line = new THREE.Line(geometry, material);
 
     this.world.path.add(line);
-  }
-
-  updatePosition(){
-    if(this.pathIndex === this.path.length){
-      clearInterval(this.pathUpdater);
-      // Clear existing path
-      this.world.path.clear();
-      return;
-    }
-
-    const curr = this.path[this.pathIndex];
-    this.source.moveTo(curr);
-    this.pathIndex++;
   }
 }

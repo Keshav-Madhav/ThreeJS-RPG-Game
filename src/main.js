@@ -4,6 +4,7 @@ import Stats from 'three/examples/jsm/libs/stats.module.js';
 import GUI from 'three/examples/jsm/libs/lil-gui.module.min.js';
 import { World } from './terrain';
 import { HumanPlayer } from './players/HumanPlayer';
+import { CombatManager } from './CombatManager';
 
 const gui = new GUI();
 
@@ -25,6 +26,9 @@ scene.add(world);
 
 const player = new HumanPlayer(new THREE.Vector3(1, 0, 5), camera, world);
 scene.add(player);
+
+const combatManager = new CombatManager();
+combatManager.addPlayer(player);
 
 const sun = new THREE.DirectionalLight();
 sun.intensity = 3;
@@ -62,7 +66,4 @@ worldFolder.add(world, 'rockCount', 0, 30, 1).name('Rock Count');
 worldFolder.add(world, 'boulderCount',0, 10, 1).name('Boulder Count');
 worldFolder.add(world, 'generate').name('Generate');
 
-const action = await player.requestAction();
-if( await action.canPerform()) {
-	await action.perform();
-}
+combatManager.takeTurns();
